@@ -1,0 +1,12 @@
+                                       b[rowser]
+
+The b browser! By Hugo Coto
+
+INSTALLATION
+        Just run `make` and then run `./b`. 
+
+LICENSE
+        GPL3
+
+DEVELOPMENT STATUS
+It just run hugocoto.com. Simple but functional
