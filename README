@@ -2,11 +2,15 @@
 
 The b browser! By Hugo Coto
 
-INSTALLATION
-        Just run `make` and then run `./b`. 
+Installation
+        Just run `make` and then `./b`. It depends on Qt6 so it have to be
+        installed. 
 
-LICENSE
+Usage
+        You can start b from command line. It accept one parameter, either 
+        "--help" or the url to be opened. You can modify look and keybinds in
+        config.h. Note that you have to rebuild it after modification.
+
+License
         GPL3
 
-DEVELOPMENT STATUS
-It just run hugocoto.com. Simple but functional
