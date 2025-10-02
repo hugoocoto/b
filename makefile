@@ -4,7 +4,7 @@ LIBS    = `pkg-config --libs Qt6Core Qt6Widgets Qt6WebEngineWidgets`
 
 all: b
 
-b: main.cpp
+b: main.cpp config.h
 	$(CXX) $(CXXFLAGS) main.cpp -o b $(LIBS)
 
 clean:
