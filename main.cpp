@@ -57,6 +57,7 @@ main(int argc, char *argv[])
         // Change url_element text on urlChanged
         QObject::connect(view->page(), &QWebEnginePage::urlChanged,
                          [&](const QUrl &url) {
+                                 url_element->setMaximumWidth(window->width()); // todo: change this
                                  url_element->setText(url.toString());
                          });
 
@@ -68,7 +69,7 @@ main(int argc, char *argv[])
         window = new QWidget;
         window->show();
 
-        // Main window layour
+        // Main window layout
         layout = new QVBoxLayout(window);
         layout->addWidget(url_element);
         layout->addWidget(view);
@@ -99,7 +100,6 @@ main(int argc, char *argv[])
                         int y = (window->height() - floating->height()) / 2;
                         floating->move(x, y);
                         floating->show();
-                        // floating->raise();
                         line_edit->setFocus();
                         line_edit->setText(url_element->text());
                         line_edit->selectAll();
