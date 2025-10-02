@@ -60,8 +60,9 @@ main(int argc, char *argv[])
         // Show help message before load anything
         if (argc == 2 && !strcmp(argv[1], "--help")) {
                 printf("The b browser! By Hugo Coto\n");
-                printf("Usage: %s [--help, url]\n", argv[0]);
-                printf("  Launch b and open url if provided\n");
+                printf("Usage: %s [--help, url] -> "
+                       "Launch b and open url if provided\n",
+                       argv[0]);
                 return 0;
         }
 
