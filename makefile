@@ -1,5 +1,5 @@
 CXX     = g++
-CXXFLAGS= -Wall -Wextra -fPIC `pkg-config --cflags Qt6Core Qt6Widgets Qt6WebEngineWidgets`
+CXXFLAGS= -Wall -Wextra -fPIC `pkg-config --cflags Qt6Core Qt6Widgets Qt6WebEngineWidgets` -DQTANGLE
 LIBS    = `pkg-config --libs Qt6Core Qt6Widgets Qt6WebEngineWidgets`
 
 all: b

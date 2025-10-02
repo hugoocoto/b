@@ -12,9 +12,12 @@
 #include <QUrlQuery>
 #include <QVBoxLayout>
 #include <QWebEnginePage>
+#include <QWebEngineProfile>
 #include <QWebEngineUrlRequestJob>
 #include <QWebEngineUrlSchemeHandler>
 #include <QWebEngineView>
+
+#include "config.h"
 
 void
 open_url(QWebEngineView *view, const QString input)
@@ -28,7 +31,7 @@ open_url(QWebEngineView *view, const QString input)
                 view->setUrl(url);
 
         } else {
-                url = QUrl("https://www.google.com/search");
+                url = QUrl(search_engine);
                 QUrlQuery query;
                 query.addQueryItem("q", input);
                 url.setQuery(query);
@@ -39,20 +42,32 @@ open_url(QWebEngineView *view, const QString input)
 int
 main(int argc, char *argv[])
 {
+        QWidget *floating;
+        QHBoxLayout *floating_layout;
+        QLineEdit *line_edit;
         QLabel *url_element;
         QWebEngineView *view;
         QWidget *window;
         QVBoxLayout *layout;
+        QWebEngineProfile *profile;
+        QWebEnginePage *page;
 
+#if defined(GLANGLE)
         // just because It doesn't find my vulkan and it's slow as f*ck
         QByteArray flags = "--use-gl=angle --use-angle=gl --enable-gpu-rasterization --enable-zero-copy --ignore-gpu-blocklist";
         qputenv("QTWEBENGINE_CHROMIUM_FLAGS", flags);
+#endif
 
         QApplication app(argc, argv);
 
+        // cookies
+        profile = new QWebEngineProfile(QString::fromLatin1("b.%1").arg(qWebEngineChromiumVersion()));
+        page = new QWebEnginePage(profile);
+
         // Content
         view = new QWebEngineView();
-        view->setUrl(QUrl("https://www.hugocoto.com/"));
+        view->setPage(page);
+        if (startup_page) view->setUrl(QUrl(startup_page));
 
         // Change url_element text on urlChanged
         QObject::connect(view->page(), &QWebEnginePage::urlChanged,
@@ -62,7 +77,7 @@ main(int argc, char *argv[])
                          });
 
         // URL bar
-        url_element = new QLabel("This is the url bar");
+        url_element = new QLabel(default_url_text ?: "");
         url_element->setFixedHeight(30);
 
         // Main window
@@ -77,12 +92,12 @@ main(int argc, char *argv[])
         layout->setContentsMargins(0, 0, 0, 0);
 
         // Url user modification widget
-        QWidget *floating = new QWidget(window);
-        floating->setFixedSize(300, 30);
-        QHBoxLayout *floating_layout = new QHBoxLayout(floating);
-        floating_layout->setContentsMargins(0, 0, 0, 0);
-        floating_layout->setSpacing(0);
-        QLineEdit *line_edit = new QLineEdit("", floating);
+        floating = new QWidget(window);
+        floating->setFixedSize(URL_INPUT_SIZE);
+        floating_layout = new QHBoxLayout(floating);
+        floating_layout->setContentsMargins(URL_INPUT_MARGIN);
+        floating_layout->setSpacing(URL_INPUT_SPACING);
+        line_edit = new QLineEdit(floating);
         floating_layout->addWidget(line_edit);
         QObject::connect(line_edit, &QLineEdit::returnPressed, [=]() {
                 open_url(view, line_edit->text());
@@ -90,8 +105,8 @@ main(int argc, char *argv[])
                 line_edit->clear();
         });
 
-        // Atajo Ctrl+L para mostrar/ocultar
-        QShortcut *shortcut = new QShortcut(QKeySequence("Ctrl+L"), window);
+        // Ctrl+L for opening search bar
+        QShortcut *shortcut = new QShortcut(QKeySequence(url_input_toggle_key), window);
         QObject::connect(shortcut, &QShortcut::activated, [&]() {
                 if (floating->isVisible())
                         floating->hide();
