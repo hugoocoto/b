@@ -92,7 +92,7 @@ create_url_input(QWidget *window, QWebEngineView *view, QFont font, QLabel *url_
         line_edit->setStyleSheet(INPUT_STYLE);
         line_edit->setFixedHeight(TEXT_INPUT_HEIGHT);
         line_edit->setTextMargins(TEXT_MARGIN);
-        QLabel *label = new QLabel("Just some random message to fill this empty space", floating);
+        QLabel *label = new QLabel("Just a random message to fill this empty space", floating);
         label->setFont(font);
         floating_layout->addWidget(line_edit);
         floating_layout->addWidget(label);
