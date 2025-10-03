@@ -2,6 +2,7 @@ const char *search_engine = "https://www.google.com/search";
 const char *startup_page = NULL;
 const char *default_url_text = "This is the url bar";
 const char *url_input_toggle_key = "Ctrl+L";
+const char *history_toggle_key = "Ctrl+H";
 #define URLBAR_HEIGHT 40
 #define URL_INPUT_SIZE 600, 40
 #define URL_INPUT_MARGIN 0, 0, 0, 0
