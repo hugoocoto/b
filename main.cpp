@@ -16,6 +16,7 @@
  * For questions or support, contact: me@hugocoto.com
  */
 
+#include "qnamespace.h"
 #include <QApplication>
 #include <QByteArray>
 #include <QDialog>
@@ -32,19 +33,23 @@
 #include <QWebEngineHistoryItem>
 #include <QWebEnginePage>
 #include <QWebEngineProfile>
-#include <QWebEngineUrlRequestJob>
-#include <QWebEngineUrlSchemeHandler>
 #include <QWebEngineView>
-#include <cstring>
+
+enum {
+        BOTTOM,
+        TOP,
+};
 
 #include "config.h"
 
+
 void
-open_url(QWebEngineView *view, const QString input)
+open_url(QWebEngineView *view, QString input)
 {
         QUrlQuery query;
         QUrl url;
 
+        if (input.isNull() || input.isEmpty()) return;
         url = QUrl::fromUserInput(input);
 
         if (url.isLocalFile()) {
@@ -73,49 +78,72 @@ get_history_matches(QWebEngineView *view, QListWidget *list, QString match)
         }
 }
 
-void
-create_url_input(QWidget *window, QWebEngineView *view, QFont font, QLabel *url_element)
+QLabel *
+create_urlbar(QWidget *window, QWebEngineView *view, QFont &font)
 {
-        QWidget *floating;
-        QVBoxLayout *floating_layout;
-        QLineEdit *line_edit;
+        QLabel *urlbar;
 
-        floating = new QWidget(window);
-        floating->setFixedSize(URL_INPUT_SIZE);
-        floating->setStyleSheet(URL_INPUT_WINDOW_STYLE);
-        floating_layout = new QVBoxLayout(floating);
-        floating_layout->setContentsMargins(URL_INPUT_MARGIN);
-        floating_layout->setSpacing(URL_INPUT_SPACING);
-        line_edit = new QLineEdit(floating);
-        line_edit->setFont(font);
-        line_edit->setTextMargins(TEXT_MARGIN);
-        line_edit->setStyleSheet(INPUT_STYLE);
-        line_edit->setFixedHeight(TEXT_INPUT_HEIGHT);
-        line_edit->setTextMargins(TEXT_MARGIN);
-        QLabel *label = new QLabel("Just a random message to fill this empty space", floating);
+        // URL bar
+        urlbar = new QLabel(default_url_text ?: "");
+        urlbar->setFixedHeight(URLBAR_HEIGHT);
+        urlbar->setFont(font);
+        urlbar->setStyleSheet(URLBAR_STYLE);
+
+        // Change urlbar text on urlChanged
+        QObject::connect(view->page(), &QWebEnginePage::urlChanged,
+                         [=](const QUrl &url) {
+                                 urlbar->setMaximumWidth(window->width());
+                                 urlbar->setText(url.toString());
+                         });
+
+        return urlbar;
+}
+
+void
+create_url_input(QWidget *window, QWebEngineView *view, QFont font, QLabel *urlbar)
+{
+        QWidget *widget;
+        QVBoxLayout *layout;
+        QLineEdit *input;
+        QLabel *label;
+        QShortcut *shortcut;
+
+        widget = new QWidget(window);
+        widget->setFixedSize(URL_INPUT_SIZE);
+        widget->setStyleSheet(URL_INPUT_WINDOW_STYLE);
+        layout = new QVBoxLayout(widget);
+        layout->setContentsMargins(URL_INPUT_MARGIN);
+        layout->setSpacing(URL_INPUT_SPACING);
+        input = new QLineEdit(widget);
+        input->setFont(font);
+        input->setTextMargins(TEXT_MARGIN);
+        input->setStyleSheet(INPUT_STYLE);
+        input->setFixedHeight(TEXT_INPUT_HEIGHT);
+        input->setTextMargins(TEXT_MARGIN);
+        label = new QLabel("Just a random message to fill this empty space", widget);
         label->setFont(font);
-        floating_layout->addWidget(line_edit);
-        floating_layout->addWidget(label);
+        layout->addWidget(input);
+        layout->addWidget(label);
 
-        QObject::connect(line_edit, &QLineEdit::returnPressed, [=]() {
-                open_url(view, line_edit->text());
-                floating->hide();
-                line_edit->clear();
+        QObject::connect(input, &QLineEdit::returnPressed, [=]() {
+                open_url(view, input->text());
+                widget->hide();
+                input->clear();
         });
 
         // toggle search bar
-        QShortcut *shortcut = new QShortcut(QKeySequence(url_input_toggle_key), window);
+        shortcut = new QShortcut(QKeySequence(url_input_toggle_key), window);
         QObject::connect(shortcut, &QShortcut::activated, [=]() {
-                if (floating->isVisible())
-                        floating->hide();
+                if (widget->isVisible())
+                        widget->hide();
                 else {
-                        floating->move(
-                        (window->width() - floating->width()) / 2,
-                        (window->height() - floating->height()) / 2);
-                        floating->show();
-                        line_edit->setText(url_element->text());
-                        line_edit->selectAll();
-                        line_edit->setFocus();
+                        widget->move(
+                        (window->width() - widget->width()) / 2,
+                        (window->height() - widget->height()) / 2);
+                        widget->show();
+                        input->setText(urlbar->text());
+                        input->selectAll();
+                        input->setFocus();
                 }
         });
 }
@@ -123,68 +151,99 @@ create_url_input(QWidget *window, QWebEngineView *view, QFont font, QLabel *url_
 void
 create_hist(QWidget *window, QWebEngineView *view, QFont font)
 {
-        QWidget *history_widget;
-        QVBoxLayout *history_layout;
-        QLineEdit *hist_edit;
+        QWidget *widget;
+        QVBoxLayout *layout;
+        QLineEdit *input;
+        QListWidget *hist_list;
+        QShortcut *shortcut;
 
-        history_widget = new QWidget(window);
-        history_widget->setFixedSize(HIST_WINDOW_SIZE);
-        history_widget->setStyleSheet(HIST_WINDOW_STYLE);
-        history_layout = new QVBoxLayout(history_widget);
-        history_layout->setContentsMargins(HIST_LAYOUT_MARGIN);
-        history_layout->setSpacing(HIST_LAYOUT_SPACING);
-        hist_edit = new QLineEdit(history_widget);
-        hist_edit->setFont(font);
-        hist_edit->setTextMargins(TEXT_MARGIN);
+        widget = new QWidget(window);
+        widget->setFixedSize(HIST_WINDOW_SIZE);
+        widget->setStyleSheet(HIST_WINDOW_STYLE);
+        layout = new QVBoxLayout(widget);
+        layout->setContentsMargins(HIST_LAYOUT_MARGIN);
+        layout->setSpacing(HIST_LAYOUT_SPACING);
+        input = new QLineEdit(widget);
+        input->setFont(font);
+        input->setTextMargins(TEXT_MARGIN);
 
-        hist_edit->setStyleSheet(HIST_INPUT_STYLE);
-        hist_edit->setFixedHeight(TEXT_INPUT_HEIGHT);
-        history_layout->addWidget(hist_edit);
-        QListWidget *histlist = new QListWidget(history_widget);
-        history_layout->addWidget(histlist);
-        histlist->setFont(font);
-        histlist->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        histlist->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        input->setStyleSheet(HIST_INPUT_STYLE);
+        input->setFixedHeight(TEXT_INPUT_HEIGHT);
+        layout->addWidget(input);
+        hist_list = new QListWidget(widget);
+        layout->addWidget(hist_list);
+        hist_list->setFont(font);
+        hist_list->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        hist_list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-        histlist->setStyleSheet(HIST_LIST_STYLE);
-        QObject::connect(hist_edit, &QLineEdit::textChanged, [=]() {
-                get_history_matches(view, histlist, hist_edit->text());
+        hist_list->setStyleSheet(HIST_LIST_STYLE);
+        QObject::connect(input, &QLineEdit::textChanged, [=]() {
+                get_history_matches(view, hist_list, input->text());
         });
 
-        QObject::connect(hist_edit, &QLineEdit::returnPressed, [=]() {
-                if (histlist->count() <= 0) return;
-                open_url(view, histlist->item(0)->text());
-                history_widget->hide();
-                hist_edit->clear();
+        QObject::connect(input, &QLineEdit::returnPressed, [=]() {
+                if (hist_list->count() <= 0) return;
+                open_url(view, hist_list->item(0)->text());
+                widget->hide();
+                input->clear();
         });
 
         // toggle history
-        QShortcut *hist_shortcut = new QShortcut(QKeySequence(history_toggle_key), window);
-        QObject::connect(hist_shortcut, &QShortcut::activated, [=]() {
-                if (history_widget->isVisible())
-                        history_widget->hide();
+        shortcut = new QShortcut(QKeySequence(history_toggle_key), window);
+        QObject::connect(shortcut, &QShortcut::activated, [=]() {
+                if (widget->isVisible())
+                        widget->hide();
                 else {
-                        history_widget->move(
-                        (window->width() - history_widget->width()) / 2,
-                        (window->height() - history_widget->height()) / 2);
-                        get_history_matches(view, histlist, "");
-                        history_widget->show();
-                        hist_edit->setText("");
-                        hist_edit->setFocus();
+                        widget->move( // todo: create resize handler
+                        (window->width() - widget->width()) / 2,
+                        (window->height() - widget->height()) / 2);
+                        get_history_matches(view, hist_list, "");
+                        widget->show();
+                        input->setText("");
+                        input->setFocus();
                 }
+        });
+}
+
+void
+create_main_layout(QWidget *window, QWebEngineView *view, QLabel *urlbar)
+{
+        QVBoxLayout *layout;
+
+        // Main window layout
+        layout = new QVBoxLayout(window);
+        layout->setContentsMargins(URL_BAR_MARGIN);
+        layout->setSpacing(URL_BAR_SPACING);
+
+        switch (urlbar_position) {
+        case TOP:
+                layout->addWidget(urlbar);
+                layout->addWidget(view);
+                break;
+        case BOTTOM:
+                layout->addWidget(view);
+                layout->addWidget(urlbar);
+                break;
+        }
+
+        QShortcut *shortcut = new QShortcut(QKeySequence(urlbar_toggle_key), window);
+        QObject::connect(shortcut, &QShortcut::activated, [=]() {
+                if (urlbar->isVisible())
+                        urlbar->hide();
+                else
+                        urlbar->show();
         });
 }
 
 int
 main(int argc, char *argv[])
 {
-        QLabel *url_element;
         QWebEngineView *view;
         QWidget *window;
-        QVBoxLayout *layout;
         QWebEngineProfile *profile;
         QWebEnginePage *page;
         QFont font;
+        QLabel *urlbar;
 
         // Show help message before load anything
         if (argc == 2 && !strcmp(argv[1], "--help")) {
@@ -197,10 +256,11 @@ main(int argc, char *argv[])
 
 #if defined(GLANGLE)
         // just because It doesn't find my vulkan and it's slow as f*ck
-        QByteArray flags = "--use-gl=angle --use-angle=gl "
-                           "--enable-gpu-rasterization --enable-zero-copy "
-                           "--ignore-gpu-blocklist";
-        qputenv("QTWEBENGINE_CHROMIUM_FLAGS", flags);
+        qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--use-gl=angle "
+                                              "--use-angle=gl "
+                                              "--enable-gpu-rasterization "
+                                              "--enable-zero-copy "
+                                              "--ignore-gpu-blocklist");
 #endif
 
         QApplication app(argc, argv);
@@ -208,6 +268,7 @@ main(int argc, char *argv[])
         // cookies
         profile = new QWebEngineProfile(QString::fromLatin1("b.%1").arg(qWebEngineChromiumVersion()));
         page = new QWebEnginePage(profile);
+        page->setBackgroundColor(QColor(PAGE_BGCOLOR));
 
         // Content
         view = new QWebEngineView();
@@ -221,35 +282,18 @@ main(int argc, char *argv[])
         window = new QWidget;
         window->show();
 
-        // URL bar
-        url_element = new QLabel(default_url_text ?: "");
-        url_element->setFixedHeight(URLBAR_HEIGHT);
-        url_element->setFont(font);
-        url_element->setStyleSheet(URLBAR_STYLE);
+        urlbar = create_urlbar(window, view, font);
 
-        // Change url_element text on urlChanged
-        QObject::connect(view->page(), &QWebEnginePage::urlChanged,
-                         [=](const QUrl &url) {
-                                 url_element->setMaximumWidth(window->width()); // todo: change this
-                                 url_element->setText(url.toString());
-                         });
-
-        // Main window layout
-        layout = new QVBoxLayout(window);
-        layout->addWidget(url_element);
-        layout->addWidget(view);
-        layout->setContentsMargins(URL_BAR_MARGIN);
-        layout->setSpacing(URL_BAR_SPACING);
+        // View + url main layout
+        create_main_layout(window, view, urlbar);
 
         // history widget
         create_hist(window, view, font);
 
         // Url user modification widget
-        create_url_input(window, view, font, url_element);
+        create_url_input(window, view, font, urlbar);
 
-        /* Just accept a url as the unique argument */
-        if (argc == 2) open_url(view, argv[1]);
-        if (argc != 2 && startup_page) view->setUrl(QUrl(startup_page));
+        open_url(view, argc == 2 ? argv[1] : startup_page);
 
         return app.exec();
 }
