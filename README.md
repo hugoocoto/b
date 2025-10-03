@@ -14,6 +14,8 @@ browser:
 
 For questions or support, contact: me@hugocoto.com
 
+![Image](./images/image.png)
+
 ### Installation 
 Just run `make`. It depends on Qt6 so it have to be installed. Source can be
 found on github: https://github.com/hugoocoto/b
