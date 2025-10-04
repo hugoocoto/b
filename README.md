@@ -25,7 +25,8 @@ You can start b from command line. It accept one parameter, either "--help" or
 the url to be opened. You can modify look and keybinds in config.h. Note that
 you have to rebuild it after modification.
 
-### License Copyright (C) 2025  Hugo Coto Flórez
+### License 
+    Copyright (C) 2025  Hugo Coto Flórez
     
     b is free software; you can redistribute it and/or modify it under the terms
     of the GNU General Public License as published by the Free Software
