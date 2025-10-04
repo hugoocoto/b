@@ -16,7 +16,7 @@
  * For questions or support, contact: me@hugocoto.com
  */
 
-#include "qnamespace.h"
+#include "qdebug.h"
 #include <QApplication>
 #include <QByteArray>
 #include <QDialog>
@@ -120,7 +120,8 @@ create_url_input(QWidget *window, QWebEngineView *view, QFont font, QLabel *urlb
         input->setStyleSheet(INPUT_STYLE);
         input->setFixedHeight(TEXT_INPUT_HEIGHT);
         input->setTextMargins(TEXT_MARGIN);
-        label = new QLabel("Just a random message to fill this empty space", widget);
+        label = new QLabel(searchbox_label, widget);
+        label->setAlignment(Qt::AlignCenter);
         label->setFont(font);
         layout->addWidget(input);
         layout->addWidget(label);

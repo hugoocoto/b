@@ -1,13 +1,13 @@
 const char *search_engine = "https://www.google.com/search";
 const char *startup_page = NULL; // use a blank page on startup
 const char *default_url_text = "This is the url bar";
+const char* searchbox_label = "Just a random message to fill this empty space";
 const char *url_input_toggle_key = "Ctrl+L";
 const char *history_toggle_key = "Ctrl+H";
 const char *font_family = "Iosevka NFM";
 const int font_pxsize = 20;
 const int urlbar_position = BOTTOM; // TOP or BOTTOM
 const char *urlbar_toggle_key = "Ctrl+t";
-
 #define GLANGLE // Use gl-angle instead of vulkan
 // #undef GLANGLE // Uncomment to use vulkan backend
 
