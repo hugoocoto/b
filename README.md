@@ -4,7 +4,7 @@ The b browser! By Hugo Coto
 
 ### Description 
 
-Minimal but customizable interface with bloat chromium-based engine. 
+Minimal but customizable browser with a bloated chromium-based engine. 
 
 There are some mappings that should be known in order to properly use the
 browser:
@@ -41,6 +41,6 @@ you have to rebuild it after modification.
     details.
     
     You should have received a copy of the GNU General Public License along with
-    Lu. If not, see <https://www.gnu.org/licenses/>
+    b. If not, see <https://www.gnu.org/licenses/>
     
 
