@@ -19,11 +19,13 @@
 #include <QApplication>
 #include <QByteArray>
 #include <QDialog>
+#include <QFile>
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QObject>
 #include <QPushButton>
+#include <QSettings>
 #include <QShortcut>
 #include <QUrl>
 #include <QUrlQuery>
@@ -41,6 +43,7 @@ enum {
 
 #include "config.h"
 
+const QString hist_fname = "history.bin";
 
 void
 open_url(QWebEngineView *view, QString input)
@@ -133,6 +136,8 @@ create_url_input(QWidget *window, QWebEngineView *view, QFont font, QLabel *urlb
         label = new QLabel(searchbox_label, widget);
         label->setAlignment(Qt::AlignCenter);
         label->setFont(font);
+        label->setStyleSheet(INPUT_SEARCHBOX_STYLE);
+        label->setContentsMargins(TEXT_MARGIN);
         layout->addWidget(input);
         layout->addWidget(label);
 
@@ -186,6 +191,7 @@ create_hist(QWidget *window, QWebEngineView *view, QFont font)
         hist_list->setFont(font);
         hist_list->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         hist_list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        hist_list->setContentsMargins(TEXT_MARGIN);
 
         hist_list->setStyleSheet(HIST_LIST_STYLE);
         QObject::connect(input, &QLineEdit::textChanged, [=]() {
@@ -232,6 +238,27 @@ create_hist(QWidget *window, QWebEngineView *view, QFont font)
         });
 }
 
+void
+load_hist(QWebEngineView *view)
+{
+        static bool loaded = false;
+        if (loaded) return;
+        QSettings settings;
+        QByteArray ba = settings.value("page/history").toByteArray();
+        QDataStream ds(&ba, QIODevice::ReadOnly);
+        ds >> *(view->page()->history());
+        loaded = true;
+}
+
+void
+save_hist(QWebEngineView *view)
+{
+        QSettings settings;
+        QByteArray ba;
+        QDataStream ds(&ba, QIODevice::WriteOnly);
+        ds << *(view->page()->history());
+        settings.setValue("page/history", ba);
+}
 void
 create_main_layout(QWidget *window, QWebEngineView *view, QLabel *urlbar)
 {
@@ -301,6 +328,10 @@ main(int argc, char *argv[])
         view = new QWebEngineView();
         view->setPage(page);
 
+#if defined(PERSISTENT_HISTORY) && defined(AUTO_LOAD_HISTORY)
+        load_hist(view);
+#endif
+
         // font
         font = QFont(font_family);
         font.setPixelSize(font_pxsize);
@@ -322,5 +353,16 @@ main(int argc, char *argv[])
 
         open_url(view, argc == 2 ? argv[1] : startup_page);
 
-        return app.exec();
+        // load_history
+        QShortcut *shortcut = new QShortcut(QKeySequence(history_restore), window);
+        QObject::connect(shortcut, &QShortcut::activated, [=]() {
+                load_hist(view);
+        });
+
+
+        int status = app.exec();
+#ifdef PERSISTENT_HISTORY
+        save_hist(view);
+#endif
+        return status;
 }

@@ -10,6 +10,7 @@ Minimal but customizable browser with a bloated chromium-based engine.
 | :------: | :----------------------------- |
 | `ctrl-l` | Open search input box.         |
 | `ctrl-h` | Open history navigation box.   |
+| `ctrl-H` | Load stored history.           |
 | `ctrl-t` | Toggle url bar visibility.     |
 | `ctrl-[` | Go back in history.            |
 | `ctrl-]` | Go forward in history.         |
@@ -26,6 +27,12 @@ found on github: https://github.com/hugoocoto/b
 You can start b from command line. It accept one parameter, either "--help" or
 the url to be opened. You can modify look and keybinds in config.h. Note that
 you have to rebuild it after modification.
+
+#### Recommendations
+Please, start session with google so it doesn't ask you too much to fill
+captchas. All this data is stored in your machine, this browser doesn't use your
+data. I don't have a startup page by default because I don't use it, so this way
+the start time is lower. 
 
 ### License 
     Copyright (C) 2025  Hugo Coto Flórez

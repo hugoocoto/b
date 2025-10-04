@@ -7,7 +7,8 @@ const char *url_input_toggle_key = "Ctrl+L";
 const char *history_toggle_key = "Ctrl+H";
 const char *history_forward_key = "Ctrl+]";
 const char *history_back_key = "Ctrl+[";
-const char *urlbar_toggle_key = "Ctrl+t";
+const char *urlbar_toggle_key = "Ctrl+T";
+const char *history_restore = "Ctrl+Shift+H";
 
 /* Fonts */
 const char *font_family = "Iosevka NFM";
@@ -26,10 +27,15 @@ const char *searchbox_label = "Just a random message to fill this empty space";
 #define GLANGLE // Use gl-angle instead of vulkan
 // #undef GLANGLE // Uncomment to use vulkan backend
 
+#define AUTO_LOAD_HISTORY  // Load history on startup
+#define PERSISTENT_HISTORY // Store history between sessions
+#undef AUTO_LOAD_HISTORY
+// #undef PERSISTENT_HISTORY
+
 #define URLBAR_HEIGHT 40
 #define URL_INPUT_SIZE 600, 300
 #define URL_INPUT_MARGIN 10, 10, 10, 10
-#define URL_INPUT_SPACING 0
+#define URL_INPUT_SPACING 10
 #define URL_BAR_MARGIN 0, 0, 0, 0
 #define URL_BAR_SPACING 0
 #define TEXT_MARGIN 10, 0, 10, 0
@@ -38,47 +44,50 @@ const char *searchbox_label = "Just a random message to fill this empty space";
 #define HIST_WINDOW_SIZE 600, 300
 #define TEXT_INPUT_HEIGHT 40
 
-#define BG_COLOR "#272e33"
-#define FG_COLOR "#bbc0b0"
-#define BLACK "#383f44"
-#define RED "#e67e80"
-#define GREEN "#a7c080"
-#define YELLOW "#dbbc7f"
-#define BLUE "#7fbbb3"
-#define MAGENTA "#d699b6"
-#define CYAN "#83c092"
-#define WHITE "#bbc0b0"
-#define TRANSPARENT "00000000"
-#define DARK_BLACK "#161d22"
+#define LIGHT_WHITE "#f8f9fa"
+#define BASE_WHITE "#e9ecef"
+#define DARK_WHITE "#dee2e6"
+#define LIGHT_GRAY "#ced4da"
+#define BASE_GRAY "#adb5bd"
+#define DARK_GRAY "#6c757d"
+#define LIGHT_BLACK "#495057"
+#define BASE_BLACK "#343a40"
+#define DARK_BLACK "#212529"
+#define TRANSPARENT "#00000000"
 
-const char *PAGE_BGCOLOR = DARK_BLACK;
+const char *PAGE_BGCOLOR = LIGHT_BLACK;
 
-const char *URLBAR_STYLE = "color: " FG_COLOR ";"
-                           "background-color: " BG_COLOR ";";
+const char *URLBAR_STYLE = "color: " BASE_WHITE ";"
+                           "background-color: " BASE_BLACK ";";
 
-const char *URL_INPUT_WINDOW_STYLE = "color: " FG_COLOR ";"
-                                     "background-color: " BG_COLOR ";"
+const char *URL_INPUT_WINDOW_STYLE = "color: " LIGHT_WHITE ";"
+                                     "background-color: " DARK_BLACK ";"
                                      "border: 0px;"
                                      "border-radius: 20px;";
 
-const char *INPUT_STYLE = "color: " FG_COLOR ";"
-                          "background-color: " BLACK ";"
+const char *INPUT_STYLE = "color: " LIGHT_WHITE ";"
+                          "background-color: " LIGHT_BLACK ";"
                           "border: 0px;"
                           "border-radius: 10px;";
 
-const char *HIST_WINDOW_STYLE = "color: " FG_COLOR ";"
-                                "background-color: " BG_COLOR ";"
+const char *INPUT_SEARCHBOX_STYLE = "color: " DARK_WHITE ";"
+                                    "background-color: " BASE_BLACK ";"
+                                    "border: 0;"
+                                    "border-radius: 10px;";
+
+const char *HIST_WINDOW_STYLE = "background-color: " DARK_BLACK ";"
                                 "border: 0px;"
                                 "border-radius: 20px;";
 
-const char *HIST_INPUT_STYLE = "color: " FG_COLOR ";"
-                               "background-color: " BLACK ";"
+const char *HIST_INPUT_STYLE = "color: " LIGHT_WHITE ";"
+                               "background-color: " LIGHT_BLACK ";"
                                "border: 0px;"
                                "border-radius: 10px;";
 
-const char *HIST_LIST_STYLE = "color: " FG_COLOR ";"
-                              "background-color: " BG_COLOR ";"
-                              "border: 0;";
+const char *HIST_LIST_STYLE = "color: " DARK_WHITE ";"
+                              "background-color: " BASE_BLACK ";"
+                              "border: 0;"
+                              "border-radius: 10px;";
 
 
 /* This file is part of the b browser
