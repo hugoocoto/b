@@ -6,14 +6,13 @@ The b browser! By Hugo Coto
 
 Minimal but customizable browser with a bloated chromium-based engine. 
 
-There are some mappings that should be known in order to properly use the
-browser:
-
- - `ctrl-l`: Open search input box.
- - `ctrl-h`: Open history navigation box.
- - `ctrl-t`: Toggle url bar visibility.
- - `ctrl-[`: Go back in history.
- - `ctrl-]`: Go forward in history.
+| Mappings | Desription                     |
+| :------: | :----------------------------- |
+| `ctrl-l` | Open search input box.         |
+| `ctrl-h` | Open history navigation box.   |
+| `ctrl-t` | Toggle url bar visibility.     |
+| `ctrl-[` | Go back in history.            |
+| `ctrl-]` | Go forward in history.         |
 
 For questions or support, contact: me@hugocoto.com
 
