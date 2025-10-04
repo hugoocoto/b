@@ -176,24 +176,26 @@ create_hist(QWidget *window, QWebEngineView *view, QFont font)
         widget = new QWidget(window);
         widget->setFixedSize(HIST_WINDOW_SIZE);
         widget->setStyleSheet(HIST_WINDOW_STYLE);
-        layout = new QVBoxLayout(widget);
-        layout->setContentsMargins(HIST_LAYOUT_MARGIN);
-        layout->setSpacing(HIST_LAYOUT_SPACING);
+
         input = new QLineEdit(widget);
         input->setFont(font);
         input->setTextMargins(TEXT_MARGIN);
-
         input->setStyleSheet(HIST_INPUT_STYLE);
         input->setFixedHeight(TEXT_INPUT_HEIGHT);
-        layout->addWidget(input);
+
         hist_list = new QListWidget(widget);
-        layout->addWidget(hist_list);
         hist_list->setFont(font);
         hist_list->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         hist_list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         hist_list->setContentsMargins(TEXT_MARGIN);
-
         hist_list->setStyleSheet(HIST_LIST_STYLE);
+
+        layout = new QVBoxLayout(widget);
+        layout->setContentsMargins(HIST_LAYOUT_MARGIN);
+        layout->setSpacing(HIST_LAYOUT_SPACING);
+        layout->addWidget(input);
+        layout->addWidget(hist_list);
+
         QObject::connect(input, &QLineEdit::textChanged, [=]() {
                 get_history_matches(view, hist_list, input->text());
         });
