@@ -16,7 +16,6 @@
  * For questions or support, contact: me@hugocoto.com
  */
 
-#include "qdebug.h"
 #include <QApplication>
 #include <QByteArray>
 #include <QDialog>
@@ -75,6 +74,17 @@ get_history_matches(QWebEngineView *view, QListWidget *list, QString match)
         for (QWebEngineHistoryItem item : hist->items()) {
                 if (match.isEmpty() || item.url().toString().contains(match))
                         list->addItem(item.url().toString());
+        }
+}
+
+void
+history_goto_url(QWebEngineView *view, QString url)
+{
+        QWebEngineHistory *hist = view->history();
+
+        for (QWebEngineHistoryItem item : hist->items()) {
+                if (item.url().toString() == url)
+                        return hist->goToItem(item);
         }
 }
 
@@ -184,7 +194,7 @@ create_hist(QWidget *window, QWebEngineView *view, QFont font)
 
         QObject::connect(input, &QLineEdit::returnPressed, [=]() {
                 if (hist_list->count() <= 0) return;
-                open_url(view, hist_list->item(0)->text());
+                history_goto_url(view, hist_list->item(0)->text());
                 widget->hide();
                 input->clear();
         });
@@ -203,6 +213,22 @@ create_hist(QWidget *window, QWebEngineView *view, QFont font)
                         input->setText("");
                         input->setFocus();
                 }
+        });
+
+        // go back in history
+        shortcut = new QShortcut(QKeySequence(history_back_key), window);
+        QObject::connect(shortcut, &QShortcut::activated, [=]() {
+                QWebEngineHistory *h = view->history();
+                if (h->canGoBack())
+                        h->back();
+        });
+
+        // go forward in history
+        shortcut = new QShortcut(QKeySequence(history_forward_key), window);
+        QObject::connect(shortcut, &QShortcut::activated, [=]() {
+                QWebEngineHistory *h = view->history();
+                if (h->canGoForward())
+                        h->forward();
         });
 }
 

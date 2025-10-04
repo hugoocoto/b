@@ -8,9 +8,12 @@ Minimal but customizable interface with bloat chromium-based engine.
 
 There are some mappings that should be known in order to properly use the
 browser:
-    - `ctrl-l`: Open search input box.
-    - `ctrl-h`: Open history navigation box.
-    - `ctrl-t`: Toggle url bar visibility.
+
+ - `ctrl-l`: Open search input box.
+ - `ctrl-h`: Open history navigation box.
+ - `ctrl-t`: Toggle url bar visibility.
+ - `ctrl-[`: Go back in history.
+ - `ctrl-]`: Go forward in history.
 
 For questions or support, contact: me@hugocoto.com
 

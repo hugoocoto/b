@@ -1,13 +1,28 @@
+/* Feel */
 const char *search_engine = "https://www.google.com/search";
 const char *startup_page = NULL; // use a blank page on startup
-const char *default_url_text = "This is the url bar";
-const char* searchbox_label = "Just a random message to fill this empty space";
+
+/* Mappings */
 const char *url_input_toggle_key = "Ctrl+L";
 const char *history_toggle_key = "Ctrl+H";
+const char *history_forward_key = "Ctrl+]";
+const char *history_back_key = "Ctrl+[";
+const char *urlbar_toggle_key = "Ctrl+t";
+
+/* Fonts */
 const char *font_family = "Iosevka NFM";
 const int font_pxsize = 20;
+
+/* Ui */
 const int urlbar_position = BOTTOM; // TOP or BOTTOM
-const char *urlbar_toggle_key = "Ctrl+t";
+
+/* Random messages */
+const char *default_url_text = "This is the url bar";
+const char *searchbox_label = "Just a random message to fill this empty space";
+
+// Enable this if you notice that pictures and videos renders too slow (for
+// example when using google images tab) It's enabled by default because I have
+// problems with vulkan backend but it should perform better.
 #define GLANGLE // Use gl-angle instead of vulkan
 // #undef GLANGLE // Uncomment to use vulkan backend
 
