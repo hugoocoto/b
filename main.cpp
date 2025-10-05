@@ -43,7 +43,24 @@ enum {
 
 #include "config.h"
 
-const QString hist_fname = "history.bin";
+
+#define JSShortcut(keyseq, ...)                                              \
+        QObject::connect(new QShortcut(QKeySequence((keyseq)), window),      \
+                         &QShortcut::activated, [=]() {                      \
+                                 view->page()->runJavaScript((__VA_ARGS__)); \
+                         });
+
+
+void
+load_vim_navigation(QWidget *window, QWebEngineView *view)
+{
+        JSShortcut("j", "window.scrollBy(0, " scroll_step ");")
+        JSShortcut("k", "window.scrollBy(0, -" scroll_step ");")
+        JSShortcut("g", "window.scroll(0,0);")
+        JSShortcut("Shift+G", "window.scroll(0,document.body.scrollHeight);")
+        JSShortcut("d", "window.scrollBy(0, 3 * " scroll_step ");")
+        JSShortcut("u", "window.scrollBy(0, -3 * " scroll_step ");")
+}
 
 void
 open_url(QWebEngineView *view, QString input)
@@ -227,16 +244,14 @@ create_hist(QWidget *window, QWebEngineView *view, QFont font)
         shortcut = new QShortcut(QKeySequence(history_back_key), window);
         QObject::connect(shortcut, &QShortcut::activated, [=]() {
                 QWebEngineHistory *h = view->history();
-                if (h->canGoBack())
-                        h->back();
+                if (h->canGoBack()) h->back();
         });
 
         // go forward in history
         shortcut = new QShortcut(QKeySequence(history_forward_key), window);
         QObject::connect(shortcut, &QShortcut::activated, [=]() {
                 QWebEngineHistory *h = view->history();
-                if (h->canGoForward())
-                        h->forward();
+                if (h->canGoForward()) h->forward();
         });
 }
 
@@ -355,16 +370,21 @@ main(int argc, char *argv[])
 
         open_url(view, argc == 2 ? argv[1] : startup_page);
 
+#ifdef USE_VIM_MOTIONS
+        load_vim_navigation(window, view);
+#endif
+
         // load_history
         QShortcut *shortcut = new QShortcut(QKeySequence(history_restore), window);
         QObject::connect(shortcut, &QShortcut::activated, [=]() {
                 load_hist(view);
         });
 
-
         int status = app.exec();
+
 #ifdef PERSISTENT_HISTORY
         save_hist(view);
 #endif
+
         return status;
 }

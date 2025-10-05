@@ -10,6 +10,8 @@ const char *history_back_key = "Ctrl+[";
 const char *urlbar_toggle_key = "Ctrl+T";
 const char *history_restore = "Ctrl+Shift+H";
 
+#define scroll_step "60"
+
 /* Fonts */
 const char *font_family = "Iosevka NFM";
 const int font_pxsize = 20;
@@ -26,6 +28,9 @@ const char *searchbox_label = "Just a random message to fill this empty space";
 // problems with vulkan backend but it should perform better.
 #define GLANGLE // Use gl-angle instead of vulkan
 // #undef GLANGLE // Uncomment to use vulkan backend
+
+#define USE_VIM_MOTIONS // use j, k, d, u, g, G
+// #undef USE_VIM_MOTIONS
 
 #define AUTO_LOAD_HISTORY  // Load history on startup
 #define PERSISTENT_HISTORY // Store history between sessions

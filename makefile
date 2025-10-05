@@ -1,4 +1,4 @@
-CC    = g++
+CC    = g++ 
 FLAGS = -Wall -Wextra -fPIC 
 LIBS  = `cat compile_flags.txt`
 
