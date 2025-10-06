@@ -16,6 +16,8 @@
  * For questions or support, contact: me@hugocoto.com
  */
 
+#include "qlogging.h"
+#include "qnamespace.h"
 #include <QApplication>
 #include <QByteArray>
 #include <QDialog>
@@ -56,6 +58,8 @@ load_vim_navigation(QWidget *window, QWebEngineView *view)
 {
         JSShortcut("j", "window.scrollBy(0, " scroll_step ");")
         JSShortcut("k", "window.scrollBy(0, -" scroll_step ");")
+        JSShortcut("h", "window.scrollBy(" scroll_step ", 0);")
+        JSShortcut("l", "window.scrollBy(-" scroll_step ", 0);")
         JSShortcut("g", "window.scroll(0,0);")
         JSShortcut("Shift+G", "window.scroll(0,document.body.scrollHeight);")
         JSShortcut("d", "window.scrollBy(0, 3 * " scroll_step ");")
@@ -315,6 +319,7 @@ main(int argc, char *argv[])
         QWebEnginePage *page;
         QFont font;
         QLabel *urlbar;
+        QShortcut *shortcut;
 
         // Show help message before load anything
         if (argc == 2 && !strcmp(argv[1], "--help")) {
@@ -375,10 +380,50 @@ main(int argc, char *argv[])
 #endif
 
         // load_history
-        QShortcut *shortcut = new QShortcut(QKeySequence(history_restore), window);
-        QObject::connect(shortcut, &QShortcut::activated, [=]() {
-                load_hist(view);
+        if (history_restore) {
+                shortcut = new QShortcut(
+                QKeySequence(history_restore), window);
+                QObject::connect(shortcut, &QShortcut::activated, [=]() {
+                        load_hist(view);
+                });
+        }
+
+        // zoom in
+        if (zoom_in_key) {
+                shortcut = new QShortcut(QKeySequence(zoom_in_key), window);
+                QObject::connect(shortcut, &QShortcut::activated, [=]() {
+                        view->setZoomFactor(view->zoomFactor() + zoom_factor);
+                });
+        }
+
+        if (zoom_in_key_2) {
+                shortcut = new QShortcut(QKeySequence(zoom_in_key_2), window);
+                QObject::connect(shortcut, &QShortcut::activated, [=]() {
+                        view->setZoomFactor(view->zoomFactor() + zoom_factor);
+                });
+        }
+
+        // zoom out
+        if (zoom_out_key) {
+                shortcut = new QShortcut(QKeySequence(zoom_out_key), window);
+                QObject::connect(shortcut, &QShortcut::activated, [=]() {
+                        view->setZoomFactor(view->zoomFactor() - zoom_factor);
+                });
+        }
+
+        // zoom default
+        if (zoom_reset_key) {
+                shortcut = new QShortcut(QKeySequence(zoom_reset_key), window);
+                QObject::connect(shortcut, &QShortcut::activated, [=]() {
+                        view->setZoomFactor(zoom_default);
+                });
+        }
+
+        // set zoom to default zoom on page load
+        QObject::connect(view, &QWebEngineView::loadFinished, [=]() {
+                view->setZoomFactor(zoom_default);
         });
+
 
         int status = app.exec();
 

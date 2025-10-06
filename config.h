@@ -10,6 +10,13 @@ const char *history_back_key = "Ctrl+[";
 const char *urlbar_toggle_key = "Ctrl+T";
 const char *history_restore = "Ctrl+Shift+H";
 
+const float zoom_factor = 0.10;
+const float zoom_default = 1.0;
+const char *zoom_in_key = "Ctrl++";
+const char *zoom_out_key = "Ctrl+-";
+const char *zoom_reset_key = "Ctrl+0";
+const char *zoom_in_key_2 = "Ctrl+="; // or NULL
+
 #define scroll_step "60"
 
 /* Fonts */
